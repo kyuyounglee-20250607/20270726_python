@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파이썬 조건문 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .code-block {
+            background-color: #2d3748;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="container mx-auto bg-white rounded-lg shadow-xl p-8 space-y-6">
+        <!-- Quiz Header -->
+        <h1 class="text-3xl font-bold text-gray-900 text-center">파이썬 조건문 실력 점검 퀴즈</h1>
+        <hr class="my-4">
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="space-y-6">
+            <!-- Question and options will be rendered here by JavaScript -->
+        </div>
+        
+        <!-- Controls and status -->
+        <div id="controls-container" class="mt-8 flex justify-between items-center">
+            <button id="prev-btn" class="px-6 py-3 bg-gray-300 text-gray-800 font-semibold rounded-full shadow-md hover:bg-gray-400 transition-colors hidden">이전</button>
+            <span id="quiz-status" class="text-gray-600 font-medium"></span>
+            <button id="next-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 transition-colors hidden">다음</button>
+        </div>
+    </div>
+
+    <script>
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const quizStatus = document.getElementById('quiz-status');
+
+        let currentQuestionIndex = 0;
+        let answeredQuestions = new Set();
+        
+        // Quiz data in Korean
+        const quizData = {
+          "questions": [
+            {
+              "question": "다음 코드의 실행 결과로 올바른 것은 무엇일까요?\n\n```python\nscore = 88\ngrade = ''\nif score >= 90:\n    grade = 'A'\nelif score >= 80:\n    grade = 'B'\nelif score >= 70:\n    grade = 'C'\nelse:\n    grade = 'F'\nprint(grade)\n```",
+              "answerOptions": [
+                {
+                  "text": "A",
+                  "rationale": "코드는 첫 번째 `if` 조건(score >= 90)을 먼저 확인하며, 이 조건은 거짓(False)입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "B",
+                  "rationale": "첫 번째 `if` 조건이 거짓이므로, 다음 `elif` 조건(score >= 80)을 평가합니다. 이 조건은 참(True)이므로 해당 코드 블록이 실행되고, 나머지 `elif`와 `else`는 건너뜁니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "C",
+                  "rationale": "score >= 80 조건이 이미 참(True)으로 평가되었기 때문에, 이 `elif` 블록은 실행될 기회를 갖지 못합니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "F",
+                  "rationale": "`else` 블록은 위의 모든 `if`와 `elif` 조건이 거짓일 때만 실행됩니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`if-elif-else` 문은 위에서부터 순서대로 조건을 확인하며, 참인 조건을 만나면 해당 블록만 실행하고 전체 구조를 빠져나옵니다."
+            },
+            {
+              "question": "사용자의 역할(role)과 활성 상태(is_active)에 따라 접근 권한을 부여하려고 합니다. 'admin'이거나 활성화된 'editor'만 접근할 수 있도록 하는 올바른 조건문은 무엇일까요?",
+              "answerOptions": [
+                {
+                  "text": "if role == 'admin' and is_active and role == 'editor':",
+                  "rationale": "한 변수가 동시에 'admin'과 'editor'일 수는 없으므로, 이 `and` 조건은 항상 거짓이 됩니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "if role == 'admin' or (is_active and role == 'editor'):",
+                  "rationale": "이 조건은 'admin' 역할이거나(활성 상태 무관), 'editor'이면서 동시에 활성화된 경우를 정확하게 표현합니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "if (role == 'admin' or role == 'editor') and is_active:",
+                  "rationale": "이 조건은 'admin'과 'editor' 모두 반드시 활성화 상태여야만 접근을 허용하므로, 요구사항과 다릅니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "if role == 'admin' or is_active and role == 'editor':",
+                  "rationale": "괄호가 없으면 `and`가 `or`보다 우선순위가 높아 `is_active and role == 'editor'`가 먼저 평가됩니다. 이는 의도한 논리와 같습니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "두 가지 주요 조건('admin'이거나' 또는 '활성 editor'이거나)을 어떻게 논리적으로 묶을지 생각해 보세요. 연산자 우선순위를 명확히 하기 위해 괄호를 사용하는 것이 좋습니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과는 무엇일까요?\n\n```python\nmessage = \"통과\" if all([True, 1, \"hello\"]) else \"실패\"\nprint(message)\n```",
+              "answerOptions": [
+                {
+                  "text": "통과",
+                  "rationale": "`all()` 함수는 리스트의 모든 요소가 불리언 값으로 평가했을 때 참(True)이면 `True`를 반환합니다. `True`, 0이 아닌 정수 `1`, 비어있지 않은 문자열 `\"hello\"`는 모두 참으로 평가됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "실패",
+                  "rationale": "리스트의 모든 요소가 참(True)으로 평가되므로 `all()` 함수는 `True`를 반환하고, 따라서 `else` 블록은 실행되지 않습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "True",
+                  "rationale": "`all()` 함수의 결과는 `True`이지만, 조건부 표현식에 따라 최종적으로 변수에 할당되는 값은 문자열 \"통과\"입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "오류가 발생합니다.",
+                  "rationale": "`all()` 함수는 다양한 데이터 타입을 포함하는 리스트를 처리할 수 있으며, 각 요소를 불리언으로 평가하여 정상적으로 작동합니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "파이썬에서 `0`, `''`(빈 문자열), `[]`(빈 리스트), `None` 등은 거짓(False)으로, 그 외 대부분의 값은 참(True)으로 평가됩니다. `all()` 함수는 이 규칙을 따릅니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과는 무엇일까요?\n\n```python\nuser_info = {\"name\": \"Alice\", \"age\": 30}\nif \"email\" not in user_info:\n    print(\"이메일 누락\")\nelse:\n    print(\"이메일 있음\")\n```",
+              "answerOptions": [
+                {
+                  "text": "이메일 누락",
+                  "rationale": "`in` 연산자는 딕셔너리에 대해 키(key)의 존재 여부를 확인합니다. 'email'이라는 키가 `user_info` 딕셔너리에 없으므로 `not in` 조건은 참(True)이 됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "이메일 있음",
+                  "rationale": "'email'이라는 키가 딕셔너리에 존재하지 않으므로 `else` 블록은 실행되지 않습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "True",
+                  "rationale": "조건문의 결과는 `True`이지만, `print()` 함수에 의해 출력되는 것은 지정된 문자열입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "오류가 발생합니다.",
+                  "rationale": "`not in` 연산자는 딕셔너리의 키 존재 여부를 확인하는 유효한 방법입니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "딕셔너리에 `in` 또는 `not in` 연산자를 사용하면 기본적으로 키(key)를 기준으로 존재 여부를 검사합니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과는 무엇일까요?\n\n```python\na = [1, 2, 3]\nb = [1, 2, 3]\nprint(\"Same object\") if a is b else print(\"Different object\")\n```",
+              "answerOptions": [
+                {
+                  "text": "Same object",
+                  "rationale": "`is` 연산자는 두 변수가 메모리상에서 동일한 객체를 참조하는지 확인합니다. `a`와 `b`는 내용이 같지만 서로 다른 메모리 공간에 생성된 별개의 리스트 객체입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "Different object",
+                  "rationale": "`a`와 `b`는 내용이 같은 별개의 리스트 객체이므로, 메모리 주소가 다릅니다. 따라서 `is` 연산자는 `False`를 반환하고 `else` 부분이 실행됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "True",
+                  "rationale": "조건 `a is b`의 결과는 `False`이며, `print()` 함수에 의해 출력되는 것은 문자열입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "오류가 발생합니다.",
+                  "rationale": "`is` 연산자를 사용하여 두 리스트의 정체성을 비교하는 것은 유효한 파이썬 문법입니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`is` 연산자는 두 변수가 같은 메모리 주소를 가리키는지(정체성) 비교하고, `==` 연산자는 두 변수의 내용이 같은지(동등성) 비교합니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과로 올바른 것은 무엇일까요?\n\n```python\nitems = [0, '', 'apple', None]\nfound = any(items)\nprint(found)\n```",
+              "answerOptions": [
+                {
+                  "text": "True",
+                  "rationale": "`any()` 함수는 이터러블의 요소 중 하나라도 참(True)으로 평가되면 `True`를 반환합니다. 리스트의 'apple'은 비어있지 않은 문자열이므로 참입니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "False",
+                  "rationale": "리스트에 참으로 평가되는 요소('apple')가 하나 이상 존재하므로 `any()`는 `False`를 반환하지 않습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "apple",
+                  "rationale": "`any()` 함수는 참으로 평가되는 요소를 직접 반환하는 것이 아니라, 불리언 값(`True` 또는 `False`)을 반환합니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "None",
+                  "rationale": "리스트에 `None`이 포함되어 있지만, 참으로 평가되는 다른 요소가 있기 때문에 `any()`의 최종 결과는 `True`가 됩니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`any()` 함수는 단 하나의 요소라도 참(True)이면 즉시 `True`를 반환하고 평가를 중단합니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과는 무엇일까요?\n\n```python\nvalue = 25\nif value > 50:\n    print(\"크다\")\nelif value > 20:\n    print(\"보통\")\nelif value > 10:\n    print(\"작다\")\n```",
+              "answerOptions": [
+                {
+                  "text": "크다",
+                  "rationale": "`value > 50` 조건은 거짓이므로 이 블록은 실행되지 않습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "보통",
+                  "rationale": "첫 번째 `if` 조건이 거짓이므로 다음 `elif value > 20` 조건을 확인합니다. 이 조건은 참이므로 \"보통\"이 출력되고, 이후의 `elif`는 검사하지 않습니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "작다",
+                  "rationale": "`value > 20` 조건이 이미 참으로 평가되어 실행되었기 때문에, 이 `elif` 블록은 검사될 기회가 없습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "아무것도 출력되지 않는다.",
+                  "rationale": "두 번째 `elif` 조건이 참이므로, 해당 블록의 `print` 함수가 실행됩니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`if...elif...` 체인에서, 하나의 조건이 만족되면 나머지 조건들은 확인하지 않는다는 점을 기억하세요."
+            },
+            {
+              "question": "다음 조건부 표현식의 실행 결과는 무엇일까요?\n\n```python\nmy_list = []\nstatus = \"비어있음\" if not my_list else \"내용 있음\"\nprint(status)\n```",
+              "answerOptions": [
+                {
+                  "text": "비어있음",
+                  "rationale": "빈 리스트(`[]`)는 불리언 값으로 평가할 때 거짓(False)입니다. `not my_list`는 `not False`가 되어 `True`로 평가되므로, \"비어있음\"이 할당됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "내용 있음",
+                  "rationale": "빈 리스트는 거짓(False)으로 평가되므로 `if` 조건이 참이 되어 `else` 부분은 실행되지 않습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "False",
+                  "rationale": "`not my_list`의 결과는 `True`이지만, 최종적으로 `status` 변수에 할당되고 출력되는 값은 문자열 \"비어있음\"입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "True",
+                  "rationale": "`not my_list`가 `True`로 평가되지만, 조건부 표현식은 `if` 조건이 참일 때 첫 번째 값을 반환합니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "파이썬에서 컨테이너(리스트, 딕셔너리, 문자열 등)가 비어 있는지 여부는 그 자체로 불리언 조건을 형성할 수 있습니다."
+            },
+            {
+              "question": "다음 코드의 실행 결과는 무엇일까요?\n\n```python\npermissions = [\"read\", \"write\"]\nuser_action = \"execute\"\n\nif user_action in permissions or \"admin\" in permissions:\n    print(\"허용\")\nelse:\n    print(\"거부\")\n```",
+              "answerOptions": [
+                {
+                  "text": "허용",
+                  "rationale": "`or` 연산자는 두 조건 중 하나만 참이어도 전체를 참으로 평가합니다. 하지만 이 경우 `user_action in permissions`와 `\"admin\" in permissions` 모두 거짓입니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "거부",
+                  "rationale": "첫 번째 조건(`\"execute\" in permissions`)은 거짓이고, 두 번째 조건(`\"admin\" in permissions`)도 거짓입니다. `or` 연산의 양쪽이 모두 거짓이므로 `else` 블록이 실행됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "True",
+                  "rationale": "조건문의 최종 결과는 `False`이지만, 프로그램은 `else` 블록 안의 `print` 함수를 실행하여 문자열을 출력합니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "False",
+                  "rationale": "조건문의 결과는 `False`이지만, 이것이 직접 출력되지는 않습니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`or` 연산자는 연결된 조건들 중 단 하나라도 참(True)이면 전체 결과가 참이 됩니다. 두 조건이 모두 거짓일 때만 결과가 거짓이 됩니다."
+            },
+            {
+              "question": "비밀번호가 8자 이상이고 숫자를 포함해야만 '유효'로 판단하는 함수가 있습니다. 다음 호출의 결과는 무엇일까요?\n\n```python\ndef is_valid(pw):\n    if len(pw) >= 8 and any(char.isdigit() for char in pw):\n        return \"유효\"\n    else:\n        return \"무효\"\n\nprint(is_valid(\"password\"))\n```",
+              "answerOptions": [
+                {
+                  "text": "유효",
+                  "rationale": "비밀번호 \"password\"는 8자 이상이라는 첫 번째 조건은 만족하지만, 숫자를 포함하지 않으므로 `any()` 함수가 `False`를 반환합니다. `and` 연산의 한 쪽이 거짓이므로 전체 조건이 거짓이 됩니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "무효",
+                  "rationale": "비밀번호의 길이는 8자 이상이지만, 숫자를 포함하지 않아 `any(char.isdigit() for char in pw)` 조건이 `False`가 됩니다. `and`로 연결된 두 조건 중 하나가 거짓이므로 `else` 블록이 실행됩니다.",
+                  "isCorrect": true
+                },
+                {
+                  "text": "True",
+                  "rationale": "함수는 문자열 \"유효\" 또는 \"무효\"를 반환하도록 설계되었습니다.",
+                  "isCorrect": false
+                },
+                {
+                  "text": "아무것도 반환하지 않는다.",
+                  "rationale": "`if-else` 구조는 항상 두 경로 중 하나를 실행하므로, 함수는 반드시 값을 반환합니다.",
+                  "isCorrect": false
+                }
+              ],
+              "hint": "`and` 연산자로 연결된 조건은 모든 개별 조건이 참(True)이어야만 전체가 참이 됩니다. 하나라도 거짓이면 전체는 거짓입니다."
+            }
+          ]
+        };
+
+        function renderQuestion(index) {
+            quizContainer.innerHTML = '';
+            
+            if (index >= quizData.questions.length) {
+                quizContainer.innerHTML = '<div class="text-2xl font-bold text-center text-green-600">퀴즈 완료! 모든 문제를 푸셨습니다.</div>';
+                nextBtn.classList.add('hidden');
+                prevBtn.classList.add('hidden');
+                quizStatus.textContent = '';
+                return;
+            }
+
+            const q = quizData.questions[index];
+            const qDiv = document.createElement('div');
+            qDiv.classList.add('space-y-4');
+
+            // Question
+            const questionTitle = document.createElement('h2');
+            questionTitle.classList.add('text-xl', 'font-semibold', 'text-gray-800');
+            questionTitle.textContent = `${index + 1}. ${q.question.split('\n')[0]}`;
+            qDiv.appendChild(questionTitle);
+            
+            // Code block
+            const codeBlock = document.createElement('pre');
+            codeBlock.classList.add('code-block');
+            codeBlock.textContent = q.question.split('\n').slice(2).join('\n');
+            qDiv.appendChild(codeBlock);
+
+            // Hint
+            const hintDiv = document.createElement('div');
+            hintDiv.classList.add('text-sm', 'text-gray-500', 'italic');
+            hintDiv.textContent = `힌트: ${q.hint}`;
+            qDiv.appendChild(hintDiv);
+
+            // Options
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('space-y-3');
+            optionsDiv.id = `options-${index}`;
+
+            q.answerOptions.forEach((option, i) => {
+                const button = document.createElement('button');
+                button.classList.add('w-full', 'px-4', 'py-3', 'text-left', 'bg-gray-100', 'text-gray-700', 'rounded-md', 'shadow-sm', 'hover:bg-gray-200', 'transition-colors', 'font-medium');
+                button.textContent = option.text;
+                button.dataset.index = i;
+                
+                button.addEventListener('click', () => handleAnswer(q, button, i, optionsDiv));
+                optionsDiv.appendChild(button);
+            });
+
+            qDiv.appendChild(optionsDiv);
+            quizContainer.appendChild(qDiv);
+            
+            // Update status
+            quizStatus.textContent = `문제 ${index + 1} / ${quizData.questions.length}`;
+            updateNavButtons();
+        }
+
+        function handleAnswer(question, selectedButton, selectedIndex, optionsDiv) {
+            if (answeredQuestions.has(currentQuestionIndex)) {
+                return; // Already answered
+            }
+
+            // Mark as answered
+            answeredQuestions.add(currentQuestionIndex);
+
+            // Disable all buttons for this question
+            const buttons = optionsDiv.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.classList.remove('hover:bg-gray-200');
+            });
+            
+            // Show rationale for all options
+            question.answerOptions.forEach((option, i) => {
+                const button = buttons[i];
+                const rationaleDiv = document.createElement('div');
+                rationaleDiv.classList.add('text-sm', 'mt-1', 'px-2', 'py-1', 'rounded-md', 'font-medium');
+                rationaleDiv.textContent = option.rationale;
+                
+                if (option.isCorrect) {
+                    button.classList.add('bg-green-100', 'border-green-500', 'border-2');
+                    rationaleDiv.classList.add('bg-green-50', 'text-green-800');
+                } else {
+                    button.classList.add('bg-red-100', 'border-red-500', 'border-2');
+                    rationaleDiv.classList.add('bg-red-50', 'text-red-800');
+                }
+                
+                // Add rationale div below the button
+                button.parentNode.insertBefore(rationaleDiv, button.nextSibling);
+            });
+        }
+
+        function updateNavButtons() {
+            prevBtn.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextBtn.classList.toggle('hidden', currentQuestionIndex >= quizData.questions.length);
+            nextBtn.textContent = (currentQuestionIndex === quizData.questions.length - 1) ? '결과 보기' : '다음';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < quizData.questions.length) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+            }
+        });
+        
+        // Initial render
+        window.onload = function() {
+            renderQuestion(currentQuestionIndex);
+        };
+
+    </script>
+</body>
+</html>
