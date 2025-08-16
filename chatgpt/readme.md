@@ -5,7 +5,8 @@
 ---
 
 ## 주요 기능
-- 사용자가 입력한 한글 문장을 mp3 파일로 저장
+- 텍스트 파일(`input.txt`)에서 한글 문장을 읽어옴
+- 읽어온 텍스트를 mp3 파일로 저장
 - 저장된 mp3 파일을 자동으로 재생
 - 초보자도 이해할 수 있도록 상세한 주석 포함
 
@@ -52,7 +53,20 @@ from gtts import gTTS  # 텍스트를 음성으로 변환
 from playsound import playsound  # mp3 파일을 재생
 import os
 
-text = input("음성으로 변환할 한글 문장을 입력하세요: ")
+# 입력 파일에서 텍스트 읽기
+input_file = "input.txt"
+try:
+    with open(input_file, 'r', encoding='utf-8') as f:
+        text = f.read()
+    print(f"'{input_file}' 파일에서 다음 내용을 읽었습니다:")
+    print("-" * 50)
+    print(text)
+    print("-" * 50)
+except FileNotFoundError:
+    print(f"'{input_file}' 파일을 찾을 수 없습니다.")
+    exit(1)
+
+# 텍스트를 음성으로 변환
 tts = gTTS(text=text, lang='ko')
 filename = "output.mp3"
 tts.save(filename)
